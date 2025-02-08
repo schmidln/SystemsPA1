@@ -1,6 +1,14 @@
+/*
+ * Author: Lucas Schmidt
+ * Assignment: PA1 - Length Unit Converter
+ * Description: This program converts length units including  between metric and US customary systems.
+ * Date: February 7th, 2025
+ */
+
+
+#include <ctype.h>
 #include <math.h>
 #include <stdio.h>
-#include <ctype.h>
 #include <string.h>
 
 #define MAX_BUFFER_SIZE 256
@@ -38,10 +46,10 @@ double convert(double value, const char * const input_unit_string, const char * 
     }
 
     if (!is_metric(input_unit) && is_metric(output_unit)) {
-        return (value / factors[input_unit]) * IN_TO_CM * factors[output_unit];
+        return ((value * factors[input_unit]) * IN_TO_CM) / factors[output_unit];
     }
     else if (is_metric(input_unit) && !is_metric(output_unit)) {
-        return ((value / factors[input_unit]) / IN_TO_CM) * factors[output_unit];
+        return ((value * factors[input_unit]) / IN_TO_CM) / factors[output_unit];
     }
     else {
         return value * (factors[input_unit] / factors[output_unit]);
@@ -65,6 +73,13 @@ int capture_and_scan_input(double *value, char *input_string, char *output_strin
     return 3;
 }
 
+void print_allowable_units() {
+    printf("Allowable units:");
+    for (int i = 0; i < num_unit_strings; i++) {
+        printf(" %s", unit_strings[i]);
+    }
+    printf(".\n");
+}
 
 int main() {
     puts("Please enter a length to convert, in the form <number> <input-unit> <output-unit>.");
@@ -75,7 +90,13 @@ int main() {
     char output_unit[100];
 
     while (capture_and_scan_input(&num, input_unit, output_unit) == 3 ) {
-        convert(
+        double converted_num = convert(num,input_unit,output_unit);
+        if (isnan(converted_num)) {
+            print_allowable_units();
+        }
+        else {
+            printf("%.6f %s = %.6f %s\n", num, input_unit, converted_num, output_unit);
+        }
     }
 
     return 0;
